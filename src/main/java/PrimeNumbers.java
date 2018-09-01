@@ -1,12 +1,14 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 class PrimeNumbers {
 
-  void findMaxPalindrome(int rangeMin, int rangeMax) {
+  void findMaxPalindrome(Integer rangeMin, Integer rangeMax) {
     List<Integer> primeNumberList = generatePrimeNumberFromRange(rangeMin, rangeMax);
     TreeSet<Long> palindromes = new TreeSet<>();
     Map<Long, List<Long>> palindromesAndMultiples = new HashMap<>();
@@ -16,7 +18,7 @@ class PrimeNumbers {
       for (int k = i; k <= index; k++) {
         Long primeNumberLow = primeNumberList.get(index - k).longValue();
         Long productOfTwoPrimeFiveDigitNumbers = primeNumberHigh * primeNumberLow;
-        if (isPalindrome2(productOfTwoPrimeFiveDigitNumbers)) {
+        if (isPalindrome(productOfTwoPrimeFiveDigitNumbers)) {
           List<Long> multiples = new ArrayList<>();
           palindromes.add(productOfTwoPrimeFiveDigitNumbers);
           multiples.add(primeNumberHigh);
@@ -34,7 +36,7 @@ class PrimeNumbers {
     }
   }
 
-  boolean isPalindrome(Long productOfTwoPrimeFiveDigitNumbers) {
+  boolean isPalindrome2(Long productOfTwoPrimeFiveDigitNumbers) {
     long palindrome = productOfTwoPrimeFiveDigitNumbers;
     Long revers = 0L;
     while (palindrome != 0) {
@@ -48,7 +50,7 @@ class PrimeNumbers {
     return false;
   }
 
-  boolean isPalindrome2(Long productOfTwoPrimeFiveDigitNumbers) {
+  boolean isPalindrome(Long productOfTwoPrimeFiveDigitNumbers) {
     Long palindrome = productOfTwoPrimeFiveDigitNumbers;
     String stringPalindrome = palindrome.toString();
     StringBuilder builder = new StringBuilder();
@@ -59,52 +61,31 @@ class PrimeNumbers {
     return false;
   }
 
-  /**
-   * The author of the presented algorithm is Chinese computer scientist Xuedong Luo In - odd index,
-   * Ip - even index primeNumber[In] → 3*In + 2 primeNumber[Ip] → 3*Ip + 1 minus multiple 11.
-   *
-   * @param rangeMin - you choice rage (min 0).
-   * @param rangeMax - you choice rage (max 5 digit).
-   * @return list with prime number
-   */
-  List<Integer> generatePrimeNumberFromRange(int rangeMin, int rangeMax) {
+  public List<Integer> generatePrimeNumberFromRange(Integer rangeMin, Integer rangeMax) {
+    Integer[] tab = new Integer[rangeMax];
 
-    if (rangeMin < 0) {
-      throw new RuntimeException("Number must be 0 or higher");
+    for (int i = 0; i < rangeMax; i++) {
+      tab[i] = i;
     }
-    List<Integer> primeNumberList = new ArrayList();
-    int minPrimeIndex = rangeMin / 3;
-    int maxPrimeIndex = (rangeMax - 1) / 3;
 
-    for (int i = minPrimeIndex; i <= maxPrimeIndex; i++) {
-      int primeNumber;
-      if (i < 1) {
-        primeNumber = 2;
-        primeNumberList.add(primeNumber);
-      } else {
-        if (i % 2 == 0) {
-          primeNumber = (i * 3) + 1;
-          if (primeNumber % 11 > 0) {
-            primeNumberList.add(primeNumber);
-          }
+    for (int x = 2; x < rangeMax; x++) {
+      int index = x;
+      while (true) {
+        index += x;
+        if (index < rangeMax) {
+          tab[index] = -1;
         } else {
-          primeNumber = (i * 3) + 2;
-          if (primeNumber == 11) {
-            primeNumberList.add(primeNumber);
-          }
-          if (primeNumber % 11 > 0) {
-            primeNumberList.add(primeNumber);
-          }
+          break;
         }
       }
     }
-    return primeNumberList;
+    return Arrays.stream(tab).filter(number -> number > 1)
+        .filter(number -> number > rangeMin)
+        .collect(Collectors.toList());
   }
 
   public static void main(String[] args) {
     PrimeNumbers primeNumbers = new PrimeNumbers();
     primeNumbers.findMaxPalindrome(10000, 99999);
-    // System.out.println(primeNumbers.generatePrimeNumberFromRange(0, 150));
-
   }
 }
