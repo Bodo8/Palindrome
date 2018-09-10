@@ -1,9 +1,16 @@
+package palinrome;
+
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import java.io.File;
@@ -15,15 +22,51 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 @RunWith(JUnitParamsRunner.class)
-public class PrimeNumbersTest {
+public class MaxPalindromeTest {
 
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
-  @Test
-  public void isPalindrome() throws Exception {
+  MaxPalindrome maxPalindrome;
+
+  @Before
+  public void setUp() throws Exception {
+    maxPalindrome = new MaxPalindrome(new PrimeNumbersGenerator(),
+        new MultipliersFromPrimeNumber());
   }
 
   @Test
-  public void isPalindrome2() throws Exception {
+  public void shouldExceptionRangeInFindMaxPalindrome() throws Exception {
+    exception.expect(Exception.class);
+    exception.expectMessage("Range minimum must will be 0, max 99999");
+    maxPalindrome.findMaxPalindrome(-2, 5);
+  }
+
+  @Test
+  public void shouldExceptionNoPalindrome() throws Exception {
+    exception.expect(Exception.class);
+    exception.expectMessage("There are no palindromes in the given range");
+    maxPalindrome.findMaxPalindrome(0, 1);
+
+  }
+
+  @Test
+  public void shouldFindMaxPalindrome999949999() throws Exception {
+    //given
+    Long expectedPalindrome = 999949999L;
+    Long expectedMultiplier1 = 33211L;
+    Long expectedMultiplier2 = 30109L;
+
+    //when
+    Long actualPalindrome = maxPalindrome.findMaxPalindrome(10000, 99999);
+    List<Long> actualMultipliers = maxPalindrome.getMultipliersForMaxPalindrome(actualPalindrome);
+    Long actualMultiplier1 = actualMultipliers.get(0);
+    Long actualMultiplier2 = actualMultipliers.get(1);
+
+    //than
+    assertEquals(expectedPalindrome, actualPalindrome);
+    assertEquals(expectedMultiplier1, actualMultiplier1);
+    assertEquals(expectedMultiplier2, actualMultiplier2);
   }
 
   @Test
@@ -32,9 +75,7 @@ public class PrimeNumbersTest {
     //given
 
     //when
-    List<Integer> given = new PrimeNumbers()
-
-        .generatePrimeNumberFromRange(16, 90);
+    List<Integer> given = maxPalindrome.getPrimeNumberList(16, 90);
 
     //than
     assertThat(given, is(expected));
@@ -46,8 +87,7 @@ public class PrimeNumbersTest {
     //given
 
     //when
-    List<Integer> given = new PrimeNumbers()
-        .generatePrimeNumberFromRange(0, 104730);
+    List<Integer> given = maxPalindrome.getPrimeNumberList(0, 104730);
 
     //than
     assertThat(given, is(expected));
@@ -60,8 +100,7 @@ public class PrimeNumbersTest {
     //given
 
     //when
-    List<Integer> given = new PrimeNumbers()
-        .generatePrimeNumberFromRange(10000, 99999);
+    List<Integer> given = maxPalindrome.getPrimeNumberList(10000, 99999);
 
     //than
     assertThat(given, is(expected));
@@ -102,5 +141,4 @@ public class PrimeNumbersTest {
     }
     return fileData;
   }
-
 }
