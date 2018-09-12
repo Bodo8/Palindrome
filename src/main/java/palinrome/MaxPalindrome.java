@@ -30,12 +30,12 @@ public class MaxPalindrome {
       for (int k = i; k <= index; k++) {
         List<Long> onePairMultipliers = new ArrayList<>();
         Long primeNumberLow = primeNumberList.get(index - k).longValue();
-        Long productOfTwoPrimeFiveDigitNumbers = primeNumberHigh * primeNumberLow;
-        if (isPalindrome(productOfTwoPrimeFiveDigitNumbers)) {
-          palindromes.add(productOfTwoPrimeFiveDigitNumbers);
+        Long productOfTwoPrimeNumbers = primeNumberHigh * primeNumberLow;
+        if (isPalindrome(productOfTwoPrimeNumbers)) {
+          palindromes.add(productOfTwoPrimeNumbers);
           onePairMultipliers.add(primeNumberHigh);
           onePairMultipliers.add(primeNumberLow);
-          multipliers.addPairToMap(productOfTwoPrimeFiveDigitNumbers, onePairMultipliers);
+          multipliers.addPairToMap(productOfTwoPrimeNumbers, onePairMultipliers);
         }
       }
     }
